@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Scatter Plot with Images</title>
+    <link rel="stylesheet" type="text/css" href="styles.css">
+    <script src="https://d3js.org/d3.v6.js"></script>
+</head>
+<body>
+    <h1>COVID-19 Cases by Ethnicity</h1>
+    <svg width="800" height="600" id="chart"></svg>
+    <div class="tooltip"></div>
+
+    <script>
+        const margin = { top: 40, right: 20, bottom: 40, left: 60 };
+        const width = 600 - margin.left - margin.right;
+        const height = 450 - margin.top - margin.bottom;
+        //creates chart
+        const svg = d3.select("#chart")
+            .attr("width", width + margin.left + margin.right)
+            .attr("height", height + margin.top + margin.bottom)
+            .append("g")
+            .attr("transform", `translate(${margin.left},${margin.top})`);
+        //selects chart to perform interaction
+        const tooltip = d3.select(".tooltip");
+        //loads in csv
+        d3.csv("cases.csv").then(function (data) {
+            //sorts by ascending number of cases
+            data.sort((a, b) => d3.ascending(+a.Cases, +b.Cases));
+            //spaces x values
+            const x = d3.scaleBand()
+                .domain(data.map(d => d.Ethnicity))
+                .range([0, width])
+                .padding(0.1);
+            //spaces y values 
+            const y = d3.scaleLinear()
+                .domain([0, d3.max(data, d => d.Cases)])
+                .nice()
+                .range([height, 0]);
+            //mask as scatter plot points
+            const maskPic = "mask2.jpg";
+            //creates scatter plot points as covid masks
+            svg.selectAll(".image")
+                .data(data)
+                .enter().append("image")
+                .attr("class", "image")
+                .attr("x", d => x(d.Ethnicity) + x.bandwidth() / 2 - 12.5)
+                .attr("y", d => y(d.Cases) - 12.5) 
+                .attr("width", 25) 
+                .attr("height", 25) 
+                .attr("xlink:href", maskPic) 
+                //handles hover over event for each point
+                .on("mouseover", function (event, d) {
+                    tooltip.style("opacity", 1)
+                        .html(`${d.Ethnicity}: ${d.Cases}`)
+                        .style("left", (event.pageX + 10) + "px")
+                        .style("top", (event.pageY - 20) + "px");
+                })
+                .on("mouseout", function () {
+                    tooltip.style("opacity", 0);
+                })
+            //creates x-axis
+            svg.append("g")
+                .attr("class", "axis-x")
+                .attr("transform", `translate(0,${height})`)
+                .call(d3.axisBottom(x));
+            //creates y-axis
+            svg.append("g")
+                .attr("class", "axis-y")
+                .call(d3.axisLeft(y));
+            //labels x-axis
+            svg.append("text")
+                .attr("class", "x-axis-label")
+                .attr("x", width / 2)
+                .attr("y", height + margin.top - 5)
+                .text("Ethnicity");
+            //labels y-axis
+            svg.append("text")
+                .attr("class", "y-axis-label")
+                .attr("transform", "rotate(-90)")
+                .attr("x", -height / 2)
+                .attr("y", -margin.left + 15)
+                .text("Cases");
+        });
+    </script>
+</body>
+</html>
+
+
+
+
+
+
+
+

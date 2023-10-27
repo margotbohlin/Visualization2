@@ -1,0 +1,25 @@
+.bar {
+    fill: blue;
+}
+
+.x-axis-label {
+    font-family:Verdana, Geneva, Tahoma, sans-serif;
+    text-anchor: middle;
+    font-size: 20px;
+    fill: black;
+}
+
+.y-axis-label {
+    font-family: 'Times New Roman', Times, serif;
+    text-anchor: middle;
+    font-size: 20px;
+    fill: black;
+}
+
+.tooltip {
+    position: absolute;
+    background: white;
+    border: 1px solid #ccc;
+    padding: 5px;
+    opacity: 0;
+}
